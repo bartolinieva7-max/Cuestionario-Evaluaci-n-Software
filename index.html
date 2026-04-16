@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Evaluación · Software de Sistema y Optimización</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #f0f4fa;
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      padding: 1.2rem;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .evaluation-container {
+      max-width: 950px;
+      width: 100%;
+      margin: 0 auto;
+      background: white;
+      border-radius: 2rem;
+      box-shadow: 0 20px 40px -12px rgba(0,20,40,0.25);
+      padding: 1.8rem 1.8rem 2rem;
+      border: 1px solid #dbe4f0;
+    }
+    h1 {
+      font-size: 1.9rem;
+      font-weight: 600;
+      color: #1e2b3c;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 3px solid #b0c8e0;
+      padding-bottom: 0.7rem;
+      margin-bottom: 1.2rem;
+    }
+    h1 small {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: #4a627a;
+      margin-left: auto;
+    }
+    .info-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      background: #e6edf6;
+      padding: 0.7rem 1.2rem;
+      border-radius: 60px;
+    }
+    .score-box {
+      background: #1e3a5f;
+      color: white;
+      padding: 0.4rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+    .badge {
+      background: white;
+      color: #1e3a5f;
+      padding: 0.3rem 1rem;
+      border-radius: 30px;
+      font-weight: 600;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .questions-area {
+      margin: 1.5rem 0 1rem;
+    }
+    .question-card {
+      background: #fafcff;
+      border-radius: 1.2rem;
+      padding: 1.2rem 1.4rem;
+      margin-bottom: 1.3rem;
+      border: 1px solid #d0dfee;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.02);
+      transition: box-shadow 0.2s;
+    }
+    .question-header {
+      display: flex;
+      gap: 0.7rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      color: #1e3a5f;
+      font-size: 1rem;
+      align-items: baseline;
+    }
+    .q-num {
+      background: #1e3a5f;
+      color: white;
+      border-radius: 30px;
+      padding: 0.15rem 0.7rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      margin: 0.5rem 0 0.8rem;
+    }
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+      background: #ffffff;
+      border: 1.5px solid #d7e2ee;
+      border-radius: 1rem;
+      padding: 0.6rem 1rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .option:hover {
+      background: #eef4fc;
+      border-color: #7a9bcb;
+    }
+    .option input[type="radio"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 1.2rem;
+      height: 1.2rem;
+      border: 2px solid #6f8db0;
+      border-radius: 50%;
+      margin-top: 0.1rem;
+      cursor: pointer;
+      background: white;
+      flex-shrink: 0;
+    }
+    .option input[type="radio"]:checked {
+      background-color: #1e6f5c;
+      border-color: #1e6f5c;
+      box-shadow: inset 0 0 0 3px white;
+    }
+    .option label {
+      flex: 1;
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: #1f2e3f;
+      line-height: 1.4;
+    }
+    .feedback {
+      margin-top: 0.8rem;
+      padding: 0.7rem 1rem;
+      border-radius: 0.8rem;
+      font-size: 0.85rem;
+      background: #f7f9fc;
+      border-left: 5px solid;
+      color: #2a405c;
+    }
+    .feedback.correct {
+      border-left-color: #2b8c5e;
+      background: #e9f6ef;
+    }
+    .feedback.incorrect {
+      border-left-color: #c13b3b;
+      background: #ffeeee;
+    }
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin: 1.8rem 0 0.5rem;
+    }
+    .btn {
+      border: none;
+      background: #dbe4ed;
+      color: #1e3a5f;
+      font-weight: 600;
+      padding: 0.75rem 1.8rem;
+      border-radius: 60px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.03);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: 1px solid #b8cade;
+    }
+    .btn-primary {
+      background: #1e3a5f;
+      color: white;
+      border: none;
+    }
+    .btn-primary:hover {
+      background: #102b44;
+      transform: scale(1.02);
+    }
+    .btn-secondary {
+      background: #eef3f9;
+    }
+    .btn-secondary:hover {
+      background: #dae2ee;
+    }
+    .btn-success {
+      background: #2b8c5e;
+      color: white;
+      border: none;
+    }
+    .btn-success:hover {
+      background: #1f7049;
+    }
+    .footer-note {
+      margin-top: 1.5rem;
+      font-size: 0.8rem;
+      text-align: center;
+      color: #6e8898;
+    }
+    @media (max-width: 600px) {
+      body { padding: 0.8rem; }
+      .evaluation-container { padding: 1.2rem; }
+      h1 { font-size: 1.5rem; flex-wrap: wrap; }
+      .btn { padding: 0.6rem 1.2rem; font-size: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="evaluation-container">
+  <h1>
+    📋 Evaluación · Software y Optimización
+    <small>10 preguntas aleatorias</small>
+  </h1>
+  <div class="info-bar">
+    <span class="badge">🎲 40 preguntas en el banco</span>
+    <span class="score-box" id="scoreDisplay">0 / 10</span>
+  </div>
+
+  <div id="questionsArea" class="questions-area">
+    <!-- aquí se renderizan las 10 preguntas -->
+  </div>
+
+  <div class="action-buttons">
+    <button id="checkBtn" class="btn btn-success">✅ Corregir evaluación</button>
+    <button id="newTestBtn" class="btn btn-primary">🔄 Nueva evaluación (siguiente alumna)</button>
+  </div>
+  <div class="footer-note">
+    ✔️ Cada pregunta correcta suma 1 punto. Máximo 10. Cada nueva prueba mezcla el banco.
+  </div>
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    // ---------- BANCO DE PREGUNTAS UNIFICADO (40 preguntas) ----------
+    // Preguntas 1-20: del primer cuestionario (Software de Sistema y Utilitarios)
+    // Preguntas 21-40: del segundo (Optimización y Fundamentos)
+    const bank = [];
+
+    // ----- Primer bloque: 20 preguntas (archivo deepseek_html_20260415_36ef32.html) -----
+    const block1 = [
+      { text: "¿Cuál es la función principal del software de sistema?",
+        opts: ["Realizar tareas específicas para el usuario final, como escribir textos.", "Controlar y gestionar el hardware, proporcionando una plataforma para otros programas.", "Crear, probar y mantener exclusivamente otros programas de aplicación."],
+        correct: "B", exp: "La opción B es correcta porque el software de sistema es la base que le dice al hardware qué hacer y monta el escenario para las aplicaciones." },
+      { text: "¿Cómo se define a los 'programas utilitarios' en las fuentes?",
+        opts: ["Como programas que el usuario utiliza directamente para el ocio, como los juegos.", "Como el equipo de mantenimiento invisible que mantiene, optimiza y protege el sistema.", "Como componentes físicos del ordenador (hardware) encargados de la limpieza."],
+        correct: "B", exp: "La B es correcta; se les describe como especialistas que aseguran que todo corra rápido, eficiente y seguro tras bambalinas." },
+      { text: "¿Cuál es el objetivo principal del desfragmentador de disco?",
+        opts: ["Eliminar definitivamente los virus que se han colado en el sistema.", "Reordenar los archivos para que ocupen espacios contiguos y aumentar la velocidad de acceso.", "Limpiar el registro de Windows y los archivos temporales de internet."],
+        correct: "B", exp: "La B es la correcta; su función es re-coordinar los archivos para que el acceso sea mucho más rápido." },
+      { text: "Según la analogía del 'bibliotecario', ¿qué hace el desfragmentador cuando un archivo está 'fragmentado'?",
+        opts: ["Borra las partes del archivo que están duplicadas para ganar espacio.", "Junta los pedacitos de un mismo archivo que están regados por el disco duro.", "Crea una copia de seguridad del archivo en una carpeta nueva."],
+        correct: "B", exp: "La B es correcta porque la fragmentación significa que los pedazos de un archivo están dispersos, y el desfragmentador los une." },
+      { text: "¿Qué tarea realiza específicamente un software antivirus como AVG o Windows Defender?",
+        opts: ["Analizar el uso de la CPU y cerrar programas que no responden.", "Detectar, eliminar y bloquear programas maliciosos o malware en tiempo real.", "Reservar espacio en la memoria RAM para que las aplicaciones se ejecuten."],
+        correct: "B", exp: "La B es correcta ya que su misión es patrullar y proteger las puertas de entrada contra amenazas." },
+      { text: "¿Para qué sirve la aplicación CCleaner según los materiales?",
+        opts: ["Para realizar una limpieza a fondo del PC, ganar espacio y evitar que se ralentice.", "Para compilar código de programación en lenguajes como Python o C++.", "Para conectar el ratón y el teclado con el sistema operativo."],
+        correct: "A", exp: "La A es la correcta; es una herramienta de puesta a punto del sistema para ganar espacio en el disco duro." },
+      { text: "¿Qué función cumple el Administrador de Tareas en situaciones críticas?",
+        opts: ["Desfragmentar el disco duro cuando el sistema se siente lento.", "Permitir forzar el cierre de programas que se quedan congelados o no responden.", "Instalar automáticamente las actualizaciones de seguridad del antivirus."],
+        correct: "B", exp: "La B es correcta; es el 'jefe de operaciones' que permite cerrar los programas que se portan mal." },
+      { text: "¿Cuál es la combinación de teclas para abrir el Administrador de Tareas en Windows?",
+        opts: ["Alt + F4", "Ctrl + Alt + Supr", "Ctrl + Shift + Esc"],
+        correct: "C", exp: "La C es la correcta según el 'reto' propuesto en las fuentes para curiosear la lista de procesos." },
+      { text: "En la analogía del 'Portero y el Paquete', ¿quién representa al cargador de programas?",
+        opts: ["El paquete sellado que llega al edificio.", "El portero que recibe, verifica y lleva el paquete al apartamento.", "El dueño del edificio que solo observa desde lejos."],
+        correct: "B", exp: "La B es la correcta; el cargador es como un portero que prepara todo para que el programa pueda abrirse y funcionar en la RAM." },
+      { text: "¿Cuál es el primer paso que realiza el cargador de programas?",
+        opts: ["Reservar un lugar en la memoria RAM.", "Localizar el archivo en el disco duro y verificar sus permisos.", "Entregarle las llaves al programa para que empiece a correr."],
+        correct: "B", exp: "La B es la correcta; el primer paso es encontrar el paquete (programa) en el almacenamiento." },
+      { text: "¿Qué sucede durante el paso de 'Reserva de memoria' en la carga de un programa?",
+        opts: ["El sistema borra archivos temporales para hacer espacio.", "El cargador solicita al sistema operativo espacio en la RAM para el código y los datos.", "Se aumenta físicamente la capacidad del disco duro."],
+        correct: "B", exp: "La B es correcta; se prepara el 'departamento' (espacio en RAM) antes de mover el contenido." },
+      { text: "¿Qué son los 'enlaces dinámicos' en el proceso de carga?",
+        opts: ["Conexiones inalámbricas a internet que el programa necesita para bajar virus.", "La conexión del programa con bibliotecas compartidas y dependencias necesarias.", "Accesos directos que el usuario crea en el escritorio."],
+        correct: "B", exp: "La B es correcta; es el cuarto paso donde el programa se conecta con las herramientas que necesita." },
+      { text: "¿Cuál es una diferencia clave entre el software de sistema y el de aplicación?",
+        opts: ["El de sistema interactúa constantemente con el usuario, el de aplicación no.", "El de sistema trabaja en segundo plano; el de aplicación tiene interacción directa.", "El de sistema es opcional, mientras que el de aplicación es obligatorio para que la PC prenda."],
+        correct: "B", exp: "La B es la correcta según la tabla comparativa; el software de sistema es la base independiente." },
+      { text: "¿Cuál de los siguientes es un ejemplo de software de programación?",
+        opts: ["Google Chrome y Microsoft Word.", "Windows 11 y macOS.", "Compiladores, editores de código y entornos de desarrollo (IDE)."],
+        correct: "C", exp: "La C es la correcta; son herramientas para que los desarrolladores creen otros programas." },
+      { text: "¿Qué sucede si una computadora no cuenta con programas utilitarios?",
+        opts: ["Se vuelve más rápida porque tiene menos programas instalados.", "Se vuelve lenta, insegura y propenso a errores frecuentes.", "No pasa nada, ya que el hardware se mantiene solo."],
+        correct: "B", exp: "La B es la correcta; sin mantenimiento (limpieza, antivirus, optimización), el ordenador pierde salud." },
+      { text: "¿Qué aspecto del sistema monitoriza el Administrador de Tareas en tiempo real?",
+        opts: ["El historial de navegación de todos los usuarios de la red.", "El uso de CPU, memoria RAM, disco y red por cada proceso.", "La temperatura física de la habitación donde está la PC."],
+        correct: "B", exp: "La B es la correcta; ofrece una vista panorámica del consumo de recursos." },
+      { text: "Según las fuentes, ¿qué empresa es la propietaria actual de AVG Antivirus?",
+        opts: ["Microsoft.", "Avast.", "Google."],
+        correct: "B", exp: "La B es la correcta; el texto indica que actualmente AVG es propiedad de Avast." },
+      { text: "¿Por qué se dice que el desfragmentador es 'menos necesario en SSD'?",
+        opts: ["Porque los SSD borran los archivos automáticamente cada noche.", "Porque su estructura física maneja los datos de forma distinta a los discos tradicionales (HDD).", "Porque los SSD no pueden almacenar archivos de gran tamaño."],
+        correct: "B", exp: "La B es correcta; el material especifica que es especialmente útil en discos tradicionales (HDD)." },
+      { text: "¿Cuál es el propósito de la pestaña 'Procesos' en el Administrador de Tareas?",
+        opts: ["Cambiar el fondo de pantalla del escritorio.", "Identificar qué programas están consumiendo más recursos y buscar nombres desconocidos en internet.", "Escribir código en lenguaje Python para crear aplicaciones."],
+        correct: "B", exp: "La B es la correcta; es la actividad práctica sugerida para entender qué pasa 'bajo el capó'." },
+      { text: "¿Qué se recomienda hacer si aparece un proceso con un nombre raro en el sistema?",
+        opts: ["Apagar la computadora inmediatamente y no volver a prenderla.", "Ignorarlo, ya que el sistema operativo lo borrará solo si es malo.", "Investigar su función en internet para ver si es una amenaza o un proceso vital."],
+        correct: "C", exp: "La C es la correcta; se fomenta el pensamiento crítico investigando procesos desconocidos." }
+    ];
+
+    // Agregar bloque1 al banco con letras A,B,C
+    block1.forEach((q, idx) => {
+      bank.push({
+        id: `q1-${idx}`,
+        text: q.text,
+        options: q.opts,
+        correct: q.correct,
+        explanation: q.exp
+      });
+    });
+
+    // ----- Segundo bloque: 20 preguntas (archivo deepseek_html_20260415_ae0c48.html) -----
+    const block2 = [
+      { text: "¿Cuál es el propósito principal de la modularidad en el diseño de sistemas de software?",
+        opts: ["Aumentar la velocidad de procesamiento de la CPU mediante la división de hilos.", "Dividir el sistema en componentes independientes para simplificar el desarrollo, las pruebas y la gestión de la complejidad.", "Garantizar que los datos sean persistentes en una base de datos relacional."],
+        correct: "B", exp: "Correcta (B): La modularidad permite construir sistemas robustos al aislar módulos." },
+      { text: "En una arquitectura de tres capas, ¿de qué se encarga específicamente la capa de presentación?",
+        opts: ["Gestionar la lógica de negocio y los algoritmos del sistema.", "Proporcionar la interfaz de usuario (UI) y gestionar la interacción intuitiva, la entrada y visualización de datos.", "Ejecutar consultas CRUD directamente sobre la base de datos."],
+        correct: "B", exp: "Correcta (B): Se enfoca en la experiencia del usuario." },
+      { text: "¿Qué diferencia principal existe entre los algoritmos de planificación de CPU FIFO y Round Robin?",
+        opts: ["FIFO asigna un tiempo limitado a cada proceso, mientras que Round Robin los ejecuta por orden de llegada.", "Ambos algoritmos son exclusivos para la gestión de memoria RAM.", "FIFO ejecuta procesos según su llegada y Round Robin asigna una porción equitativa de tiempo a cada tarea antes de pasar a la siguiente."],
+        correct: "C", exp: "Correcta (C): FIFO es por orden de llegada; Round Robin asigna quantum." },
+      { text: "¿En qué consiste la técnica de 'paginación' en la administración de memoria del sistema operativo?",
+        opts: ["Divide la memoria en bloques lógicos de tamaño variable según la necesidad del proceso.", "Divide la memoria en bloques fijos llamados páginas para optimizar el uso de la RAM.", "Es un método para comprimir archivos en el disco duro."],
+        correct: "B", exp: "Correcta (B): La paginación usa bloques fijos (páginas)." },
+      { text: "¿Cuál es una de las principales ventajas de utilizar colecciones inmutables en el desarrollo de software?",
+        opts: ["Permiten que el estado del objeto cambie dinámicamente en cualquier momento de la ejecución.", "Son inherentemente seguras para hilos (thread-safe), eliminando la necesidad de mecanismos de sincronización complejos.", "Aumentan el consumo de memoria al requerir duplicados constantes para cada pequeña operación."],
+        correct: "B", exp: "Correcta (B): Al no poder modificarse, son seguras para concurrencia." },
+      { text: "¿Por qué se recomienda el uso de `SparseArray` en lugar de `HashMap` en Android para mapear enteros a objetos?",
+        opts: ["Porque `SparseArray` permite almacenar datos en la nube automáticamente.", "Porque evita el 'autoboxing' de tipos primitivos, lo que reduce el consumo de memoria en entornos móviles limitados.", "Porque es capaz de manejar relaciones de grafos complejos de forma más rápida."],
+        correct: "B", exp: "Correcta (B): Evita autoboxing al usar claves enteras primitivas." },
+      { text: "¿Qué función cumple la librería Room en el ecosistema de Android?",
+        opts: ["Es un motor de base de datos no relacional que compite con Firebase.", "Es una capa de abstracción sobre SQLite que proporciona verificación de consultas en tiempo de compilación.", "Sirve para diseñar la interfaz de usuario de las aplicaciones mediante drag-and-drop."],
+        correct: "B", exp: "Correcta (B): Room abstrae SQLite, verificando consultas en compilación." },
+      { text: "En el contexto de bases de datos, ¿qué garantiza el acrónimo ACID?",
+        opts: ["Que la base de datos es no relacional y altamente escalable horizontalmente.", "La gestión estructurada de datos bajo principios de Atomicidad, Consistencia, Aislamiento y Durabilidad.", "Que los datos se sincronizan en tiempo real con todos los dispositivos conectados."],
+        correct: "B", exp: "Correcta (B): ACID garantiza integridad de transacciones." },
+      { text: "¿Cuál es una característica distintiva de las bases de datos NoSQL como Realm o Firebase en Android?",
+        opts: ["Requieren un esquema rígido y consultas SQL complejas para funcionar.", "No permiten el almacenamiento de datos de forma local en el dispositivo.", "Ofrecen flexibilidad de esquema y son ideales para datos semi-estructurados o que requieren sincronización en tiempo real."],
+        correct: "C", exp: "Correcta (C): NoSQL ofrece flexibilidad de esquema y sincronización en tiempo real." },
+      { text: "¿Cuál es el impacto negativo de crear demasiados índices en una base de datos?",
+        opts: ["Las consultas de lectura (`SELECT`) se vuelven extremadamente lentas.", "Se penaliza el rendimiento de las operaciones de escritura (`INSERT`, `UPDATE`, `DELETE`).", "El tamaño de la base de datos en disco se reduce significativamente."],
+        correct: "B", exp: "Correcta (B): Cada escritura requiere actualizar índices." },
+      { text: "¿Para qué se utiliza el comando `ANALYZE` en SQLite dentro de Android?",
+        opts: ["Para borrar todos los datos corruptos de la base de datos.", "Para ayudar al optimizador de consultas a elegir el mejor plan de ejecución mediante la recopilación de estadísticas de distribución de datos.", "Para encriptar la base de datos contra accesos no autorizados."],
+        correct: "B", exp: "Correcta (B): ANALYZE recopila estadísticas para el optimizador." },
+      { text: "En la optimización de consultas, ¿por qué es recomendable evitar el uso de `SELECT *`?",
+        opts: ["Porque SQLite no reconoce el símbolo del asterisco.", "Porque reduce la cantidad de datos que deben leerse y transferirse, mejorando el rendimiento al pedir solo las columnas necesarias.", "Porque `SELECT *` borra accidentalmente los índices creados."],
+        correct: "B", exp: "Correcta (B): SELECT * trae columnas innecesarias." },
+      { text: "¿Qué función cumplen los 'drivers' en un sistema operativo?",
+        opts: ["Actúan como traductores entre el sistema operativo y los dispositivos de hardware.", "Son algoritmos que deciden qué proceso debe usar la CPU.", "Se encargan de la personalización estética de la interfaz de usuario."],
+        correct: "A", exp: "Correcta (A): Los drivers traducen comandos del SO a hardware específico." },
+      { text: "¿Qué beneficio aporta la personalización de software mediante plugins o extensiones?",
+        opts: ["Obliga a rediseñar todo el núcleo del sistema para cada nuevo usuario.", "Permite añadir funcionalidades específicas (como pasarelas de pago) sin alterar la arquitectura central del programa.", "Reduce la seguridad del sistema al permitir que cualquier código externo se ejecute sin permisos."],
+        correct: "B", exp: "Correcta (B): Los plugins extienden funcionalidad sin modificar el núcleo." },
+      { text: "¿Cuál es una tendencia futura clave mencionada para los sistemas de software?",
+        opts: ["El retorno a sistemas monolíticos sin capas para evitar la complejidad.", "El uso de Inteligencia Artificial (IA) y Aprendizaje Automático (ML) para crear sistemas más adaptativos y automatizados.", "La eliminación total de la computación en la nube por problemas de privacidad."],
+        correct: "B", exp: "Correcta (B): IA/ML son tendencias clave para sistemas adaptativos." },
+      { text: "¿Qué diferencia a un 'Índice Compuesto' de un 'Índice Simple'?",
+        opts: ["El índice compuesto solo se puede usar en bases de datos NoSQL.", "El índice simple involucra múltiples columnas, mientras que el compuesto solo una.", "El índice compuesto involucra múltiples columnas y su orden es crucial para reflejar las cláusulas de las consultas."],
+        correct: "C", exp: "Correcta (C): Índice compuesto abarca varias columnas." },
+      { text: "¿Qué se entiende por escalabilidad vertical en un sistema?",
+        opts: ["Añadir más nodos o servidores al sistema para repartir la carga.", "Aumentar la capacidad de los nodos existentes (más RAM, mejor CPU).", "Cambiar el lenguaje de programación de la aplicación por uno más moderno."],
+        correct: "B", exp: "Correcta (B): Escalabilidad vertical = mejorar el hardware del nodo existente." },
+      { text: "¿Cómo ayuda la cláusula `LIMIT` en la optimización de bases de datos Android?",
+        opts: ["Evita que la base de datos crezca más allá de un tamaño de archivo específico.", "Es esencial para la paginación de datos, pidiendo solo el subconjunto de resultados necesarios en un momento dado.", "Limita el número de usuarios que pueden acceder a la aplicación simultáneamente."],
+        correct: "B", exp: "Correcta (B): LIMIT permite paginación, reduciendo carga de memoria." },
+      { text: "¿Cuál es la función de la capa de 'Lógica de Negocio'?",
+        opts: ["Conectarse a internet para descargar actualizaciones.", "Implementar los algoritmos, validaciones y procesos que gobiernan el comportamiento y funcionalidad principal del sistema.", "Almacenar físicamente los archivos de imagen de la aplicación."],
+        correct: "B", exp: "Correcta (B): La lógica de negocio es el cerebro del sistema." },
+      { text: "¿Qué ventaja ofrece `LongSparseArray` sobre un `HashMap<Long, Object>`?",
+        opts: ["Permite realizar búsquedas de texto completo en lenguaje natural.", "Ofrece beneficios de eficiencia de memoria al evitar el autoboxing de claves de tipo `long` en dispositivos móviles.", "Es la única estructura compatible con bases de datos relacionales."],
+        correct: "B", exp: "Correcta (B): LongSparseArray evita autoboxing de long." }
+    ];
+
+    block2.forEach((q, idx) => {
+      bank.push({
+        id: `q2-${idx}`,
+        text: q.text,
+        options: q.opts,
+        correct: q.correct,
+        explanation: q.exp
+      });
+    });
+
+    // ---------- VARIABLES GLOBALES ----------
+    const TOTAL_QUESTIONS = 10;               // preguntas por evaluación
+    let currentQuestions = [];                // array de objetos pregunta (seleccionadas)
+    let userAnswers = new Array(TOTAL_QUESTIONS).fill(null); // 'A','B','C' o null
+
+    const questionsArea = document.getElementById('questionsArea');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const checkBtn = document.getElementById('checkBtn');
+    const newTestBtn = document.getElementById('newTestBtn');
+
+    // ---------- FUNCIONES ----------
+    function shufflePickN(n) {
+      // Devuelve un array de n elementos distintos del banco
+      const indices = Array.from({ length: bank.length }, (_, i) => i);
+      for (let i = indices.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [indices[i], indices[j]] = [indices[j], indices[i]];
+      }
+      return indices.slice(0, n).map(idx => bank[idx]);
+    }
+
+    function resetAnswers() {
+      userAnswers = new Array(TOTAL_QUESTIONS).fill(null);
+    }
+
+    function generateNewTest() {
+      currentQuestions = shufflePickN(TOTAL_QUESTIONS);
+      resetAnswers();
+      renderQuestions();
+      updateScoreDisplay(0); // se limpia visualmente
+    }
+
+    function updateScoreDisplay(scoreValue = null) {
+      if (scoreValue === null) {
+        // calcular según respuestas actuales
+        let correct = 0;
+        for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+          if (userAnswers[i] && userAnswers[i] === currentQuestions[i].correct) correct++;
+        }
+        scoreDisplay.textContent = `${correct} / 10`;
+      } else {
+        scoreDisplay.textContent = `${scoreValue} / 10`;
+      }
+    }
+
+    function renderQuestions() {
+      if (!currentQuestions.length) return;
+      let html = '';
+      for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+        const q = currentQuestions[i];
+        const selected = userAnswers[i];
+        const letters = ['A', 'B', 'C'];
+        
+        let optionsHtml = '';
+        q.options.forEach((optText, optIdx) => {
+          const letter = letters[optIdx];
+          const checked = (selected === letter) ? 'checked' : '';
+          optionsHtml += `
+            <div class="option" data-qidx="${i}" data-letter="${letter}">
+              <input type="radio" name="q${i}" value="${letter}" id="q${i}_${letter}" ${checked}>
+              <label for="q${i}_${letter}"><strong>${letter})</strong> ${optText}</label>
+            </div>
+          `;
+        });
+
+        // feedback se pinta vacío inicialmente, se llena con la corrección
+        html += `
+          <div class="question-card" id="card-${i}">
+            <div class="question-header">
+              <span class="q-num">Pregunta ${i+1}</span>
+              <span>${q.text}</span>
+            </div>
+            <div class="options">
+              ${optionsHtml}
+            </div>
+            <div class="feedback" id="fb-${i}"></div>
+          </div>
+        `;
+      }
+      questionsArea.innerHTML = html;
+
+      // Asignar eventos a los radios
+      for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+        const radios = document.querySelectorAll(`input[name="q${i}"]`);
+        radios.forEach(radio => {
+          radio.addEventListener('change', (e) => {
+            const val = e.target.value;
+            userAnswers[i] = val;
+            // al cambiar respuesta, limpiamos feedback previo (si existía)
+            const fbDiv = document.getElementById(`fb-${i}`);
+            if (fbDiv) {
+              fbDiv.innerHTML = '';
+              fbDiv.className = 'feedback';
+            }
+            // actualizar puntuación mientras responde (opcional)
+            updateScoreDisplay();
+          });
+        });
+        // También hacer clic en el div .option
+        const optionDivs = document.querySelectorAll(`.option[data-qidx="${i}"]`);
+        optionDivs.forEach(div => {
+          div.addEventListener('click', (e) => {
+            const radio = div.querySelector('input[type="radio"]');
+            if (radio && !radio.checked) {
+              radio.checked = true;
+              const letter = div.getAttribute('data-letter');
+              userAnswers[i] = letter;
+              const fbDiv = document.getElementById(`fb-${i}`);
+              if (fbDiv) { fbDiv.innerHTML = ''; fbDiv.className = 'feedback'; }
+              updateScoreDisplay();
+            }
+          });
+        });
+      }
+      updateScoreDisplay();
+    }
+
+    function correctEvaluation() {
+      // Muestra retroalimentación y calcula puntaje final
+      let correctCount = 0;
+      for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+        const q = currentQuestions[i];
+        const userAns = userAnswers[i];
+        const fbDiv = document.getElementById(`fb-${i}`);
+        if (!fbDiv) continue;
+        
+        const isCorrect = (userAns && userAns === q.correct);
+        if (isCorrect) correctCount++;
+        
+        const correctLetter = q.correct;
+        const correctText = q.options[['A','B','C'].indexOf(correctLetter)];
+        
+        let fbHtml = '';
+        if (!userAns) {
+          fbHtml = `<span style="color:#b85e00;">⚠️ Sin responder. La respuesta correcta es ${correctLetter}) ${correctText}.<br>${q.explanation}</span>`;
+          fbDiv.className = 'feedback incorrect';
+        } else if (isCorrect) {
+          fbHtml = `✅ <strong>¡Correcto!</strong> ${q.explanation}`;
+          fbDiv.className = 'feedback correct';
+        } else {
+          fbHtml = `❌ <strong>Incorrecto.</strong> La respuesta correcta es ${correctLetter}) ${correctText}.<br>${q.explanation}`;
+          fbDiv.className = 'feedback incorrect';
+        }
+        fbDiv.innerHTML = fbHtml;
+      }
+      updateScoreDisplay(correctCount);
+      // Mostrar alerta opcional con resultado
+      alert(`📊 Evaluación corregida.\nAciertos: ${correctCount} de 10 (${correctCount*10}%)\nPuedes revisar los detalles en pantalla.`);
+    }
+
+    // ---------- INICIALIZACIÓN Y EVENTOS ----------
+    function init() {
+      generateNewTest(); // primera prueba aleatoria
+    }
+
+    checkBtn.addEventListener('click', () => {
+      if (!currentQuestions.length) return;
+      // Verificar si hay preguntas sin responder? No obligatorio, se marcarán como incorrectas.
+      correctEvaluation();
+    });
+
+    newTestBtn.addEventListener('click', () => {
+      generateNewTest();
+    });
+
+    init();
+  })();
+</script>
+</body>
+</html>
